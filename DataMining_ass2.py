@@ -1,3 +1,4 @@
+
 import psycopg2
 import sys
 from datetime import datetime
@@ -13,13 +14,13 @@ arrivals = ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '23:00', '22:0
 csvfile2 = open('CSV_Database_Of_First_And_Last_Names/GreekCities.csv', 'r')
 creader2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
 
-n = 6000     #number of rooms' details
+n = 6001     #number of rooms' details
 
 try:
     con = psycopg2.connect("host=localhost user=postgres password=mscuser2017")
     cur = con.cursor()
     cur.execute("CREATE TABLE Room(Id_Room SERIAL PRIMARY KEY, Location varchar(40), Available_From_Date varchar(40), Available_Till_Date varchar(40), Area varchar(40), Price varchar(40), People_Capacity varchar(40),Plus_Person_Price varchar(40), Arrival_Time varchar(40), Single varchar(40), Sofa varchar(40), Double_Bed varchar(40), King_Size varchar(40), Pets varchar(40), Smoking varchar(40), Events varchar(40), Minimum_Days varchar(40), Air_Condition varchar(40), Heating varchar(40), WiFi varchar(40), TV varchar(40), Elevator varchar(40), Parking varchar(40), Oven varchar(40))")
-    for j, row in zip(range(n), creader2):
+    for j, row in zip(range(1,n), creader2):
 
         room = []
         room.extend(row)
@@ -48,7 +49,7 @@ try:
 
         if j%125 == 0:
             price = 10000 + j
-        elif j%190 == 2:
+        elif (j+1)%190 == 2:
             price = " "
         else:
             price = np.random.randint(0, 500)
@@ -58,7 +59,7 @@ try:
         # People_Capacity
         if j%160 == 0:
             capacity = 100
-        elif j%1000 == 2:
+        elif (j+3)%1000 == 2:
             capacity = " "
         else:
             capacity = np.random.randint(0, 10)
@@ -82,19 +83,19 @@ try:
         # Beds
 
         for i in range(1,5):        #gia ta bed types
-            if j%400 == 0:
+            if j%(400+i) == 0:
                 beds = '20'
-            elif j%26 == 0:
+            elif j%(26+i) == 0:
                 beds = " "
             else:
-                beds = np.random.binomial(n=1, p= 0.5)
+                beds = np.random.randint(0, 5)
                 
             room.append(beds)
 
         # Rules
 
         for i in range(1,4):        #gia ta Pets, Smoking, Events
-            if j%500 == 0:
+            if (j+1)%500 == 0:
                 pse = '2'
             else:
                 pse = np.random.binomial(n=1, p= 0.5)
@@ -104,7 +105,7 @@ try:
         room.append(min_days)
 
         for i in range(1,8):      
-            if j%2000 == 0:
+            if (j+3)%2000 == 0:
                 facilities = ' '
             else:
                 facilities = np.random.binomial(n=1, p= 0.5)
@@ -123,9 +124,7 @@ query = """SELECT * FROM Room"""
 outputquery1 = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(query)
 
 with open('Rooms', 'w') as f:
-    cur.copy_expert(outputquery1, f) 
-        
-csvfile = open('CSV_Database_Of_First_And_Last_Names/PersonData.csv', 'r') 
+    cur.copy_expert(outputquery1, f) csvfile = open('CSV_Database_Of_First_And_Last_Names/PersonData.csv', 'r') 
 creader = csv.reader(csvfile, delimiter=',', quotechar='"')
 m = 88799         #number of persons' details in csv
 cur.execute("CREATE TABLE Person(Id_Person SERIAL PRIMARY KEY, Name varchar(40), Surname varchar(40), Password varchar(40), Username varchar(40), Email varchar(40), Date_of_Birth varchar(40), Age varchar(40), Days_of_Reservation varchar(40))")

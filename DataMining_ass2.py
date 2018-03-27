@@ -124,7 +124,8 @@ query = """SELECT * FROM Room"""
 outputquery1 = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(query)
 
 with open('Rooms', 'w') as f:
-    cur.copy_expert(outputquery1, f) csvfile = open('CSV_Database_Of_First_And_Last_Names/PersonData.csv', 'r') 
+    cur.copy_expert(outputquery1, f)
+csvfile = open('CSV_Database_Of_First_And_Last_Names/PersonData.csv', 'r')
 creader = csv.reader(csvfile, delimiter=',', quotechar='"')
 m = 88799         #number of persons' details in csv
 cur.execute("CREATE TABLE Person(Id_Person SERIAL PRIMARY KEY, Name varchar(40), Surname varchar(40), Password varchar(40), Username varchar(40), Email varchar(40), Date_of_Birth varchar(40), Age varchar(40), Days_of_Reservation varchar(40))")

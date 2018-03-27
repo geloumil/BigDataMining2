@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 24 16:23:32 2018
-
-@author: mscuser
-"""
-
 import psycopg2
 import sys
 from datetime import datetime
@@ -43,41 +35,43 @@ try:
 
         # Area
 
-        if j%46 != 0:
-            area = np.random.randint(20, 100)
-        elif j%100 == 2:
+        if j%98 == 0:
+            area = 0
+        elif j%1002 == 2:
             area = " "
         else:
-            area = 0
+            area = np.random.randint(20, 100)
+            
         room.append(area)
 
         # Price
 
-        if j%46 != 0:
-            price = np.random.randint(0, 500)
-        elif j%10 == 2:
+        if j%125 == 0:
+            price = 10000 + j
+        elif j%190 == 2:
             price = " "
         else:
-            price = 10000
+            price = np.random.randint(0, 500)
+            
         room.append(price)
 
         # People_Capacity
-        if j%46 != 0:
-            capacity = np.random.randint(0, 10)
-        elif j%100 == 2:
+        if j%160 == 0:
+            capacity = 100
+        elif j%1000 == 2:
             capacity = " "
         else:
-            capacity = 100
+            capacity = np.random.randint(0, 10)
         room.append(capacity)
 
         # Plus_Person_Price
 
-        if j%46 != 0:
-            plus_price = np.random.randint(0, 500)
-        elif j%10 == 2:
+        if j%250 == 0:
+            plus_price = 10000
+        elif j%155 == 2:
             plus_price = " "
         else:
-            plus_price = 10000
+            plus_price = np.random.randint(0, 500)
         room.append(plus_price)
 
         # Arrival_Time
@@ -88,34 +82,33 @@ try:
         # Beds
 
         for i in range(1,5):        #gia ta bed types
-            if i%200 != 0:
-                beds = np.random.binomial(n=1, p= 0.5)
-            elif i%26 == 0:
+            if j%400 == 0:
+                beds = '20'
+            elif j%26 == 0:
                 beds = " "
             else:
-                beds = '20'
+                beds = np.random.binomial(n=1, p= 0.5)
+                
             room.append(beds)
 
         # Rules
 
         for i in range(1,4):        #gia ta Pets, Smoking, Events
-            if i%200 != 0:
-                pse = np.random.binomial(n=1, p= 0.5)
-            elif i%26 == 0:
-                pse =' '
-            else:
+            if j%500 == 0:
                 pse = '2'
+            else:
+                pse = np.random.binomial(n=1, p= 0.5)
+                
             room.append(pse)
         min_days= np.random.randint(0, 11)      #gia to Minimum_Days
         room.append(min_days)
 
         for i in range(1,8):      
-            if i%200 != 0:
-                facilities = np.random.binomial(n=1, p= 0.5)
-            elif i%26 == 0:
+            if j%2000 == 0:
                 facilities = ' '
             else:
-                facilities = '2'
+                facilities = np.random.binomial(n=1, p= 0.5)
+                
             room.append(facilities)
         cur.execute("INSERT into Room (Location, Available_From_Date, Available_Till_Date, Area, Price, People_Capacity, Plus_Person_Price , Arrival_Time, Single , Sofa , Double_Bed , King_Size, Pets, Smoking, Events, Minimum_Days, Air_Condition, Heating, WiFi, TV, Elevator, Parking, Oven) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", room)
         con.commit()
@@ -125,7 +118,12 @@ except psycopg2.DatabaseError, e:
 
         print 'Error %s' %e
         sys.exit(1)
-        
+
+query = """SELECT * FROM Room"""
+outputquery1 = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(query)
+
+with open('Rooms', 'w') as f:
+    cur.copy_expert(outputquery1, f) 
         
 csvfile = open('CSV_Database_Of_First_And_Last_Names/PersonData.csv', 'r') 
 creader = csv.reader(csvfile, delimiter=',', quotechar='"')

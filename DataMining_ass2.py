@@ -19,7 +19,7 @@ n = 6001     #number of rooms' details
 try:
     con = psycopg2.connect("host=localhost user=postgres password=mscuser2017")
     cur = con.cursor()
-    cur.execute("CREATE TABLE Room(Id_Room SERIAL PRIMARY KEY, Location varchar(40), Available_From_Date varchar(40), Available_Till_Date varchar(40), Area varchar(40), Price varchar(40), People_Capacity varchar(40),Plus_Person_Price varchar(40), Arrival_Time varchar(40), Single varchar(40), Sofa varchar(40), Double_Bed varchar(40), King_Size varchar(40), Pets varchar(40), Smoking varchar(40), Events varchar(40), Minimum_Days varchar(40), Air_Condition varchar(40), Heating varchar(40), WiFi varchar(40), TV varchar(40), Elevator varchar(40), Parking varchar(40), Oven varchar(40))")
+    cur.execute("CREATE TABLE Room(Id_Room SERIAL PRIMARY KEY, Location varchar(40), Available_From_Date varchar(40), Available_Till_Date varchar(40), Area varchar(40), Price varchar(40), People_Capacity varchar(40),Plus_Person_Price varchar(40), Arrival_Time varchar(40), Sofa varchar(40), Double_Bed varchar(40), King_Size varchar(40), Single varchar(40), Pets varchar(40), Smoking varchar(40), Events varchar(40), Minimum_Days varchar(40), Air_Condition varchar(40), Heating varchar(40), WiFi varchar(40), TV varchar(40), Elevator varchar(40), Parking varchar(40), Oven varchar(40))")
     for j, row in zip(range(1,n), creader2):
 
         room = []
@@ -52,7 +52,14 @@ try:
         elif (j+1)%190 == 2:
             price = " "
         else:
-            price = np.random.randint(0, 500)
+            if area <= 30:
+                price = np.random.randint(0, 50)
+            elif area <= 50:
+                price = np.random.randint(50, 100)
+            elif area <= 70:
+                price = np.random.randint(100, 150)
+            else:
+                price = np.random.randint(150, 500)
             
         room.append(price)
 
@@ -62,7 +69,14 @@ try:
         elif (j+3)%1000 == 2:
             capacity = " "
         else:
-            capacity = np.random.randint(0, 10)
+            if area <= 30:
+                capacity = np.random.randint(0, 3)
+            elif area <= 50:
+                capacity = np.random.randint(3, 5)
+            elif area <= 70:
+                 capacity = np.random.randint(5, 10)
+            else:
+                 capacity = np.random.randint(10, 15)
         room.append(capacity)
 
         # Plus_Person_Price
@@ -81,7 +95,7 @@ try:
         room.append(str(arrival_time))
         
         # Beds
-
+        bed_num = 0
         for i in range(1,5):        #gia ta bed types
             if j%(400+i) == 0:
                 beds = '20'
@@ -89,7 +103,11 @@ try:
                 beds = " "
             else:
                 beds = np.random.randint(0, 5)
-                
+            bed_num += beds
+            if bed_num >= capacity:
+                beds = 0
+            if bed_num < capacity and i ==4:
+                beds = beds +(capacity-bed_num)
             room.append(beds)
 
         # Rules
@@ -111,7 +129,7 @@ try:
                 facilities = np.random.binomial(n=1, p= 0.5)
                 
             room.append(facilities)
-        cur.execute("INSERT into Room (Location, Available_From_Date, Available_Till_Date, Area, Price, People_Capacity, Plus_Person_Price , Arrival_Time, Single , Sofa , Double_Bed , King_Size, Pets, Smoking, Events, Minimum_Days, Air_Condition, Heating, WiFi, TV, Elevator, Parking, Oven) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", room)
+        cur.execute("INSERT into Room (Location, Available_From_Date, Available_Till_Date, Area, Price, People_Capacity, Plus_Person_Price , Arrival_Time, Sofa , Double_Bed , King_Size, Single, Pets, Smoking, Events, Minimum_Days, Air_Condition, Heating, WiFi, TV, Elevator, Parking, Oven) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", room)
         con.commit()
 except psycopg2.DatabaseError, e:
         if con:

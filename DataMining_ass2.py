@@ -98,16 +98,20 @@ try:
         bed_num = 0
         for i in range(1,5):        #gia ta bed types
             if j%(400+i) == 0:
-                beds = '20'
+                beds = 20
             elif j%(26+i) == 0:
                 beds = " "
             else:
                 beds = np.random.randint(0, 5)
-            bed_num += beds
+            if beds != " ":
+                bed_num = bed_num + beds
             if bed_num >= capacity:
                 beds = 0
             if bed_num < capacity and i ==4:
-                beds = beds +(capacity-bed_num)
+                if beds!= " " and capacity != " ":
+                    beds = beds +(capacity-bed_num)
+                else:
+                    beds = 0
             room.append(beds)
 
         # Rules
